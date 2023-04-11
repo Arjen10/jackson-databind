@@ -1,15 +1,11 @@
 package com.fasterxml.jackson.databind;
 
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.io.*;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
@@ -583,4 +579,38 @@ public class ObjectMapperTest extends BaseMapTest
             assertEquals(DEFAULT_TZ, w2.getConfig().getTimeZone());
         }
     }
+
+    @JsonIncludeProperties(value = {"warningConfRedisKey", "auth_header"})
+    static class SnakeCase {
+
+        private String warningConfRedisKey;
+
+        private String authHeader;
+
+        public String getWarningConfRedisKey() {
+            return warningConfRedisKey;
+        }
+
+        public void setWarningConfRedisKey(String warningConfRedisKey) {
+            this.warningConfRedisKey = warningConfRedisKey;
+        }
+
+        public String getAuthHeader() {
+            return authHeader;
+        }
+
+        public void setAuthHeader(String authHeader) {
+            this.authHeader = authHeader;
+        }
+    }
+
+    public void testSnakeCase() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        SnakeCase snakeCase = new SnakeCase();
+        snakeCase.setAuthHeader("x-Token");
+        snakeCase.setWarningConfRedisKey("test");
+        System.out.println(mapper.writeValueAsString(snakeCase));
+    }
+
 }
